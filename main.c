@@ -17,8 +17,8 @@ int main() {
     } else if (strlen(user_menu_input) != 1 || (user_input != 'n' && user_input != 'd' && user_input != 'e' && user_input != 'c' && user_input != 'l' && user_input != 's' && user_input != 'q')) {
       bad_menu_option(user_input);
     } else {
-      printf("length is %lu and the char is %c\n", strlen(user_menu_input), user_input);
-
+      printf("execute program");
+      //execute program
 
     }
 
