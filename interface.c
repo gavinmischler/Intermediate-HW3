@@ -2,11 +2,12 @@
  * Implementation of the user interface functions
  * as described in the interface header file
  *
- * DO NOT MODIFY THE CODE IN THIS FILE                                                     * Feel free to add comments if you wish 
+ * DO NOT MODIFY THE CODE IN THIS FILE                                                     * Feel free to add comments if you wish
  */
 
 #include <stdio.h>
 #include <stdlib.h>
+#include "interface.h"
 #define NUM_DISEASES 5
 
 static const char *disease_codes[] = {"HU", "FH", "SC", "TH", "CF"};
