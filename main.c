@@ -2,32 +2,44 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 
 
-void load(unsigned int entries[], FILE *fp) {
+void load(unsigned int entries[], int num_entries, FILE *fp) {
+  char entry_line[200];
   unsigned int patient_ID;
   unsigned int patient_age;
-  char HUstatus[5];
-  char FHstatus[5];
-  char SCstatus[5];
-  char TSstatus[5];
-  char CFstatus[5];
-  char entry_line[200];
+  char HUstatus[20];
+  char FHstatus[20];
+  char SCstatus[20];
+  char TSstatus[20];
+  char CFstatus[20];
+  //get the first line which has the number of entries already, so that the buffer is on the next line
+  if (fgets(entry_line, "%s", fp) != NULL) {
+    //hooray
+  } else {
+    printf("Error: failed to pass the first line when reading from the database\n", );
+    return;
+  }
   //scan line by line until not more entries to scan
-  while (fscanf(fp, "%lu", &patient_ID) == 1) {
-
-    // scan the space
-    fgetc(fp);
-    // scan the query
-    fscanf(fp, "%[^\n]\n", query);
-
-    // put in the appropriate query, weight pair
-    strcpy(queries[i], query);
-    weights[i] = weight;
-    i++;
+  while (fgets(entry_line, 200, fp) != NULL) {
+    printf("%s\n", entry_line);
+    //pull out each piece of data from the line
+    sscanf(entry_line, "%u %u %s %s %s %s %s", &patient_ID,
+      &patient_age, HUstatus, FHstatus, SCstatus, TSstatus, CFstatus);
+    printf("ID = %u, age = %u, HU status = %s\n", patient_ID, patient_age, HUstatus);
   }
 
-  //grab the line with fgets
+  i = 0;
+  while (!is_duplicate)
+
+
+
+    // put in the appropriate query, weight pair
+    // strcpy(queries[i], query);
+    // weights[i] = weight;
+    // i++;
+
   //sscanf it to get the patient ID, age, and 5 statuses
   //make sure it's not a duplicate patient ID, if it is, break and move on to the next line
   //else, convert each disease status to an integer
@@ -59,7 +71,7 @@ int main(int argc, const char* argv[]) {
   unsigned int entries[num_entries];
 
   // read the data into the array
-  load(entries, fp);
+  load(entries, num_entries, fp);
 
   // always remember to close file pointers!
   fclose(fp);
