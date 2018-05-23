@@ -36,7 +36,8 @@ unsigned int status_to_int(char status[]) {
 
 
 // load the database into the entries[] array
-void load(unsigned int entries[], int num_entries, FILE *fp) {
+// returns the number of unique patients in the database (since some might have been duplicates)
+int load(unsigned int entries[], int num_entries, FILE *fp) {
   char entry_line[200];
   unsigned int patient_ID;
   unsigned int patient_age;
@@ -64,7 +65,7 @@ void load(unsigned int entries[], int num_entries, FILE *fp) {
       &patient_age, HUstatus, FHstatus, SCstatus, TSstatus, CFstatus);
     // add the patient ID to the patient ID array
     patient_ID_array[i] = patient_ID;
-    printf("ID = %u, age = %u, HU status = %s\n", patient_ID_array[i], patient_age, HUstatus);
+    //printf("ID = %u, age = %u, HU status = %s\n", patient_ID_array[i], patient_age, HUstatus);
 
     // check if the patient_ID is a duplicate
     if (is_duplicate(patient_ID, patient_ID_array, i)) {
@@ -76,7 +77,7 @@ void load(unsigned int entries[], int num_entries, FILE *fp) {
       unsigned int SCstatus_int = status_to_int(SCstatus);
       unsigned int TSstatus_int = status_to_int(TSstatus);
       unsigned int CFstatus_int = status_to_int(CFstatus);
-      printf("got %u %u %u %u %u\n", HUstatus_int, FHstatus_int, SCstatus_int, TSstatus_int, CFstatus_int);
+      //printf("got %u %u %u %u %u\n", HUstatus_int, FHstatus_int, SCstatus_int, TSstatus_int, CFstatus_int);
 
       // bit shift the variables to the proper location
       patient_ID = patient_ID<<17;
@@ -86,11 +87,14 @@ void load(unsigned int entries[], int num_entries, FILE *fp) {
       SCstatus_int = SCstatus_int<<4;
       TSstatus_int = TSstatus_int<<2;
       unsigned int full_entry = patient_ID | patient_age | HUstatus_int | FHstatus_int | SCstatus_int | TSstatus_int | CFstatus_int;
-      printf("now %u %u %u %u %u %u\n", HUstatus_int, FHstatus_int, SCstatus_int, TSstatus_int, CFstatus_int, full_entry);
-      entries[i] = full_entry;
+      //printf("now %u %u %u %u %u %u\n", HUstatus_int, FHstatus_int, SCstatus_int, TSstatus_int, CFstatus_int, full_entry);
+      entries[e] = full_entry;
+      printf("%u\n just put db[%i] into entries[%i]\n\n", full_entry, i, e);
+      e++;
     }
     i++;
   }
+  return e;
 }
 
 int main(int argc, const char* argv[]) {
@@ -116,7 +120,8 @@ int main(int argc, const char* argv[]) {
   unsigned int entries[num_entries];
 
   // read the data into the array
-  load(entries, num_entries, fp);
+  int num_patients = load(entries, num_entries, fp);
+  printf("num patients is %i\n", num_patients);
   // close file pointer
   fclose(fp);
 
@@ -134,8 +139,7 @@ int main(int argc, const char* argv[]) {
     } else {
       switch (user_input) {
         case 'n':
-          output_n(sizeof(entries)/sizeof(entries[0]));
-          printf("Entries[0] = %u, Entries[7] = %u\n", entries[0], entries[7]);
+          output_n(num_patients);
       }
 
     }
