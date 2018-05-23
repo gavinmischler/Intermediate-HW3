@@ -6,7 +6,6 @@
 
 //searches through the entries[] matrix to see if the
 bool is_duplicate(unsigned int patient_ID, unsigned int patient_ID_array[], int num_entered) {
-  printf("new ID %u, num entered is %i\n",patient_ID, num_entered);
   if (num_entered < 1) {
     return false;
   }
@@ -18,6 +17,23 @@ bool is_duplicate(unsigned int patient_ID, unsigned int patient_ID_array[], int 
   }
   return false;
 }
+
+//convert the disease status to its unsigned integer representation
+unsigned int status_to_int(char status[]) {
+  if (strcmp(status, "UN") == 0) {
+    return 0;
+  } else if (strcmp(status, "DF") == 0) {
+    return 1;
+  } else if (strcmp(status, "DN") == 0) {
+    return 2;
+  } else if (strcmp(status, "DT") == 0) {
+    return 3;
+  } else {
+    printf("Error: status not equal to one of the options\n");
+    return 5;
+  }
+}
+
 
 //load the database into the entries[] array
 void load(unsigned int entries[], int num_entries, FILE *fp) {
@@ -48,15 +64,36 @@ void load(unsigned int entries[], int num_entries, FILE *fp) {
     //add the patient ID to the patient ID array
     patient_ID_array[i] = patient_ID;
     printf("ID = %u, age = %u, HU status = %s\n", patient_ID_array[i], patient_age, HUstatus);
+
+    //check if the patient_ID is a duplicate
+    if (is_duplicate(patient_ID, patient_ID_array, i)) {
+      duplicate_entry(patient_ID);
+    } else {
+      //convert strings of disease statuses to integers
+      unsigned int HUstatus_int = status_to_int(HUstatus);
+      unsigned int FHstatus_int = status_to_int(FHstatus);
+      unsigned int SCstatus_int = status_to_int(SCstatus);
+      unsigned int TSstatus_int = status_to_int(TSstatus);
+      unsigned int CFstatus_int = status_to_int(CFstatus);
+      printf("got %u %u %u %u %u\n", HUstatus_int, FHstatus_int, SCstatus_int, TSstatus_int, CFstatus_int);
+
+      //bit shift the variables to the proper location
+
+
+    }
+
     i++;
   }
 
-  for (int i = 0; i < num_entries; i++) {
-    if (is_duplicate(patient_ID_array[i], patient_ID_array, i)) {
-      printf("DUPLICATE DUPLICATE DUPLICATE OF %u\n", patient_ID_array[i]);
-    }
-    printf("didn't find a duplicate\n");
-  }
+  //put all the elements into one integer together and put in entries[]
+  // for (int i = 0; i < num_entries; i++) {
+  //   //check if the patient_ID is a duplicate
+  //   if (is_duplicate(patient_ID_array[i], patient_ID_array, i)) {
+  //     printf("DUPLICATE DUPLICATE DUPLICATE OF %u\n", patient_ID_array[i]);
+  //   } else {
+  //
+  //   }
+  // }
   // while (!is_duplicate(patient_ID_array[i], patient_ID_array, i)) {
   //   //enter the information into the entries[] matrix
   //
