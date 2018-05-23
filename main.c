@@ -4,7 +4,22 @@
 #include <string.h>
 #include <stdbool.h>
 
+// Converts an integer to binary as an array of chars
+void to_binary(unsigned int decimal, FILE *fp) {
+  for (int i = 31, j = 0; i >= 0; i--, j++) {
+    fprintf(fp, "%c", ((decimal>>i) & 1) + '0');
+  }
+  fprintf(fp, "\n");
+}
 
+// writes the database in binary to the output filename specified by the user
+void write_to_file(unsigned int entries[], int num_patients, char output_filename[]) {
+  FILE *fp = fopen(output_filename, "w");
+  for (int i = 0; i < num_patients; i++) {
+    to_binary(entries[i], fp);
+  }
+  fclose(fp);
+}
 
 // fills the int array disease_profile with 5 integers
 void fill_disease_profile(unsigned int entries[], int requested_loc, int disease_profile[]) {
@@ -25,8 +40,6 @@ void fill_offspring_profile(unsigned int entries[], int requested_loc, int reque
   fill_disease_profile(entries, requested_loc, parent_profile);
   fill_disease_profile(entries, requested_loc_2, parent_profile_2);
 
-  unsigned int entry = entries[requested_loc];
-  unsigned int entry_2 = entries[requested_loc_2];
   for (int i = 0; i < 2; i++) { // For the dominant traits
     if (parent_profile[i] == 2 || parent_profile[i] == 3 || parent_profile_2[i] == 2 || parent_profile_2[i] == 3) {
       disease_profile[i] = 2; // Child is set to have the disease DN
@@ -46,8 +59,6 @@ void fill_offspring_profile(unsigned int entries[], int requested_loc, int reque
       disease_profile[i] = 1;
     }
   }
-  output_disease_profile(disease_profile);
-
 }
 
 // searches through the entries[] matrix to see if it is there
@@ -116,13 +127,11 @@ int load(unsigned int entries[], int num_entries, FILE *fp) {
   int e = 0; // e is the index of the entries array we are in
   // scan line by line until no more entries to scan
   while ((fgets(entry_line, 200, fp) != NULL) && (i < num_entries)) {
-    printf("%s\n", entry_line);
     // pull out each piece of data from the line
     sscanf(entry_line, "%u %u %s %s %s %s %s", &patient_ID,
       &patient_age, HUstatus, FHstatus, SCstatus, TSstatus, CFstatus);
     // add the patient ID to the patient ID array
     patient_ID_array[i] = patient_ID;
-    //printf("ID = %u, age = %u, HU status = %s\n", patient_ID_array[i], patient_age, HUstatus);
 
     // check if the patient_ID is a duplicate
     if (is_duplicate(patient_ID, patient_ID_array, i)) {
@@ -134,7 +143,6 @@ int load(unsigned int entries[], int num_entries, FILE *fp) {
       unsigned int SCstatus_int = status_to_int(SCstatus);
       unsigned int TSstatus_int = status_to_int(TSstatus);
       unsigned int CFstatus_int = status_to_int(CFstatus);
-      //printf("got %u %u %u %u %u\n", HUstatus_int, FHstatus_int, SCstatus_int, TSstatus_int, CFstatus_int);
 
       // bit shift the variables to the proper location
       patient_ID = patient_ID<<17;
@@ -146,7 +154,6 @@ int load(unsigned int entries[], int num_entries, FILE *fp) {
       unsigned int full_entry = patient_ID | patient_age | HUstatus_int | FHstatus_int | SCstatus_int | TSstatus_int | CFstatus_int;
       //printf("now %u %u %u %u %u %u\n", HUstatus_int, FHstatus_int, SCstatus_int, TSstatus_int, CFstatus_int, full_entry);
       entries[e] = full_entry;
-      printf("%u\n just put db[%i] into entries[%i]\n\n", full_entry, i, e);
       e++;
     }
     i++;
@@ -154,8 +161,8 @@ int load(unsigned int entries[], int num_entries, FILE *fp) {
   return e;
 }
 
+// Main function
 int main(int argc, const char* argv[]) {
-
   //Store the filepath command-line argument
   char *filepath;
   if (argc == 2) {
@@ -198,7 +205,7 @@ int main(int argc, const char* argv[]) {
       unsigned int requested_ID_2 = 0;
       int requested_loc = 0;
       int requested_loc_2 = 0;
-      //char two_inputs[30];
+      char output_filename[255];
       char empty_char;
 
       switch (user_input) {
@@ -235,9 +242,17 @@ int main(int argc, const char* argv[]) {
           } else {
             int disease_profile[5];
             fill_offspring_profile(entries, requested_loc, requested_loc_2, disease_profile);
+            output_disease_profile(disease_profile);
+            printf("\n");
           }
-
           break;
+        case 's':
+        {
+          prompt_s();
+          scanf("%s", output_filename);
+          write_to_file(entries, num_patients, output_filename);
+          break;
+        }
       }
 
     }
