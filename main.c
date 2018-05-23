@@ -52,7 +52,7 @@ void load(unsigned int entries[], int num_entries, FILE *fp) {
     //hooray
   } else {
     printf("Error: failed to pass the first line when reading from the database\n");
-    return;
+    exit(0);
   }
   int i = 0;
   //scan line by line until not more entries to scan
@@ -78,7 +78,14 @@ void load(unsigned int entries[], int num_entries, FILE *fp) {
       printf("got %u %u %u %u %u\n", HUstatus_int, FHstatus_int, SCstatus_int, TSstatus_int, CFstatus_int);
 
       //bit shift the variables to the proper location
-
+      patient_ID = patient_ID<<17;
+      patient_age = patient_age<<10;
+      HUstatus_int = HUstatus_int<<8;
+      FHstatus_int = FHstatus_int<<6;
+      SCstatus_int = SCstatus_int<<4;
+      TSstatus_int = TSstatus_int<<2;
+      unsigned int full_entry = patient_ID | patient_age | HUstatus_int | FHstatus_int | SCstatus_int | TSstatus_int | CFstatus_int;
+      printf("now %u %u %u %u %u %u\n", HUstatus_int, FHstatus_int, SCstatus_int, TSstatus_int, CFstatus_int, full_entry);
 
     }
 
