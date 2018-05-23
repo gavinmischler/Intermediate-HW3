@@ -5,6 +5,7 @@
 #include <stdbool.h>
 
 
+
 // fills the int array disease_profile with 5 integers
 void fill_disease_profile(unsigned int entries[], int requested_loc, int disease_profile[]) {
   unsigned int entry = entries[requested_loc];
@@ -13,6 +14,40 @@ void fill_disease_profile(unsigned int entries[], int requested_loc, int disease
   disease_profile[2] = (entry>>4) & 3;
   disease_profile[3] = (entry>>2) & 3;
   disease_profile[4] = entry & 3;
+}
+
+// finds the offspring of two patients and fills the disease_profile of the offspring
+void fill_offspring_profile(unsigned int entries[], int requested_loc, int requested_loc_2,
+  int disease_profile[]) {
+  int parent_profile[5];
+  int parent_profile_2[5];
+  // fill the parents' disease profiles
+  fill_disease_profile(entries, requested_loc, parent_profile);
+  fill_disease_profile(entries, requested_loc_2, parent_profile_2);
+
+  unsigned int entry = entries[requested_loc];
+  unsigned int entry_2 = entries[requested_loc_2];
+  for (int i = 0; i < 2; i++) { // For the dominant traits
+    if (parent_profile[i] == 2 || parent_profile[i] == 3 || parent_profile_2[i] == 2 || parent_profile_2[i] == 3) {
+      disease_profile[i] = 2; // Child is set to have the disease DN
+    } else if (parent_profile[i] == 0 || parent_profile_2[i] == 0) {
+      disease_profile[i] = 0; // Neither parent has the disease and one of the parents is unknown so child is unknown
+    } else {
+      disease_profile[i] = 1;
+    }
+  }
+
+  for (int i = 2; i < 5; i++) { // For the recessive traits
+    if (parent_profile[i] == 0 || parent_profile_2[i] == 0) {
+      disease_profile[i] = 0; // One of the parents is unknown
+    } else if ((parent_profile[i] == 2 || parent_profile[i] == 3) && (parent_profile_2[i] == 2 || parent_profile_2[i] == 3)) {
+      disease_profile[i] = 2; // Both parents have the disease, so child has disease
+    } else {
+      disease_profile[i] = 1;
+    }
+  }
+  output_disease_profile(disease_profile);
+
 }
 
 // searches through the entries[] matrix to see if it is there
@@ -160,7 +195,11 @@ int main(int argc, const char* argv[]) {
     } else {
 
       unsigned int requested_ID = 0;
-
+      unsigned int requested_ID_2 = 0;
+      int requested_loc = 0;
+      int requested_loc_2 = 0;
+      //char two_inputs[30];
+      char empty_char;
 
       switch (user_input) {
         case 'n':
@@ -171,7 +210,7 @@ int main(int argc, const char* argv[]) {
           prompt_d();
           scanf("%u", &requested_ID);
           // find location of that patient ID
-          int requested_loc = find_ID(entries, num_patients, requested_ID);
+          requested_loc = find_ID(entries, num_patients, requested_ID);
           if (requested_loc == -1) { // Patient ID not found in database
             bad_patient_ID(requested_ID);
             printf("\n");
@@ -181,6 +220,23 @@ int main(int argc, const char* argv[]) {
             output_disease_profile(disease_profile);
             printf("\n");
           }
+          break;
+        case 'c':
+          prompt_c();
+          scanf("%u", &requested_ID);
+          scanf("%c", &empty_char);
+          scanf("%u", &requested_ID_2);
+          printf("found %u\nand %u\n", requested_ID, requested_ID_2);
+          requested_loc = find_ID(entries, num_patients, requested_ID);
+          requested_loc_2 = find_ID(entries, num_patients, requested_ID_2);
+          if (requested_loc == -1 || requested_loc_2 == -1) {
+            bad_patient_ID(requested_ID);
+            printf("\n");
+          } else {
+            int disease_profile[5];
+            fill_offspring_profile(entries, requested_loc, requested_loc_2, disease_profile);
+          }
+
           break;
       }
 
