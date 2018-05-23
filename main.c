@@ -55,8 +55,8 @@ void load(unsigned int entries[], int num_entries, FILE *fp) {
     exit(0);
   }
   int i = 0;
-  //scan line by line until not more entries to scan
-  while (fgets(entry_line, 200, fp) != NULL && i < num_entries) {
+  //scan line by line until no more entries to scan
+  while ((fgets(entry_line, 200, fp) != NULL) && (i < num_entries)) {
     printf("%s\n", entry_line);
     //pull out each piece of data from the line
     sscanf(entry_line, "%u %u %s %s %s %s %s", &patient_ID,
@@ -86,37 +86,10 @@ void load(unsigned int entries[], int num_entries, FILE *fp) {
       TSstatus_int = TSstatus_int<<2;
       unsigned int full_entry = patient_ID | patient_age | HUstatus_int | FHstatus_int | SCstatus_int | TSstatus_int | CFstatus_int;
       printf("now %u %u %u %u %u %u\n", HUstatus_int, FHstatus_int, SCstatus_int, TSstatus_int, CFstatus_int, full_entry);
-
+      entries[i] = full_entry;
     }
-
     i++;
   }
-
-  //put all the elements into one integer together and put in entries[]
-  // for (int i = 0; i < num_entries; i++) {
-  //   //check if the patient_ID is a duplicate
-  //   if (is_duplicate(patient_ID_array[i], patient_ID_array, i)) {
-  //     printf("DUPLICATE DUPLICATE DUPLICATE OF %u\n", patient_ID_array[i]);
-  //   } else {
-  //
-  //   }
-  // }
-  // while (!is_duplicate(patient_ID_array[i], patient_ID_array, i)) {
-  //   //enter the information into the entries[] matrix
-  //
-  // }
-
-    // put in the appropriate query, weight pair
-    // strcpy(queries[i], query);
-    // weights[i] = weight;
-    // i++;
-
-  //sscanf it to get the patient ID, age, and 5 statuses
-  //make sure it's not a duplicate patient ID, if it is, break and move on to the next line
-  //else, convert each disease status to an integer
-  //bitwise shift each integer to the right location
-  //put all the bits together with XOR and put this 32 bit integer in the entries[] array
-
 }
 
 int main(int argc, const char* argv[]) {
@@ -143,11 +116,8 @@ int main(int argc, const char* argv[]) {
 
   // read the data into the array
   load(entries, num_entries, fp);
-
-  // always remember to close file pointers!
+  // close file pointer
   fclose(fp);
-
-
 
   char user_menu_input[20];
   char user_input = 'a';
@@ -162,7 +132,7 @@ int main(int argc, const char* argv[]) {
       bad_menu_option(user_input);
     } else {
       printf("execute program");
-      //execute program
+      // execute program
 
     }
 
