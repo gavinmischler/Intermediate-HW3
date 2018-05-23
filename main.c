@@ -4,7 +4,22 @@
 #include <string.h>
 #include <stdbool.h>
 
+//searches through the entries[] matrix to see if the
+bool is_duplicate(unsigned int patient_ID, unsigned int patient_ID_array[], int num_entered) {
+  printf("new ID %u, num entered is %i\n",patient_ID, num_entered);
+  if (num_entered < 1) {
+    return false;
+  }
+  //search through the patient ID's that have been entered to see if this is a duplicate
+  for (int j = 0; j < num_entered; j++) {
+    if (patient_ID == patient_ID_array[j]) {
+      return true;
+    }
+  }
+  return false;
+}
 
+//load the database into the entries[] array
 void load(unsigned int entries[], int num_entries, FILE *fp) {
   char entry_line[200];
   unsigned int patient_ID;
@@ -14,26 +29,38 @@ void load(unsigned int entries[], int num_entries, FILE *fp) {
   char SCstatus[20];
   char TSstatus[20];
   char CFstatus[20];
+  unsigned int patient_ID_array[num_entries];
+
   //get the first line which has the number of entries already, so that the buffer is on the next line
   if (fgets(entry_line, "%s", fp) != NULL) {
     //hooray
   } else {
-    printf("Error: failed to pass the first line when reading from the database\n", );
+    printf("Error: failed to pass the first line when reading from the database\n");
     return;
   }
+  int i = 0;
   //scan line by line until not more entries to scan
-  while (fgets(entry_line, 200, fp) != NULL) {
+  while (fgets(entry_line, 200, fp) != NULL && i < num_entries) {
     printf("%s\n", entry_line);
     //pull out each piece of data from the line
     sscanf(entry_line, "%u %u %s %s %s %s %s", &patient_ID,
       &patient_age, HUstatus, FHstatus, SCstatus, TSstatus, CFstatus);
-    printf("ID = %u, age = %u, HU status = %s\n", patient_ID, patient_age, HUstatus);
+    //add the patient ID to the patient ID array
+    patient_ID_array[i] = patient_ID;
+    printf("ID = %u, age = %u, HU status = %s\n", patient_ID_array[i], patient_age, HUstatus);
+    i++;
   }
 
-  i = 0;
-  while (!is_duplicate)
-
-
+  for (int i = 0; i < num_entries; i++) {
+    if (is_duplicate(patient_ID_array[i], patient_ID_array, i)) {
+      printf("DUPLICATE DUPLICATE DUPLICATE OF %u\n", patient_ID_array[i]);
+    }
+    printf("didn't find a duplicate\n");
+  }
+  // while (!is_duplicate(patient_ID_array[i], patient_ID_array, i)) {
+  //   //enter the information into the entries[] matrix
+  //
+  // }
 
     // put in the appropriate query, weight pair
     // strcpy(queries[i], query);
