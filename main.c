@@ -4,7 +4,29 @@
 #include <string.h>
 #include <stdbool.h>
 
-// searches through the entries[] matrix to see if the
+
+// fills the int array disease_profile with 5 integers
+void fill_disease_profile(unsigned int entries[], int requested_loc, int disease_profile[]) {
+  unsigned int entry = entries[requested_loc];
+  disease_profile[0] = (entry>>8) & 3; // just take the two digits that matter
+  disease_profile[1] = (entry>>6) & 3;
+  disease_profile[2] = (entry>>4) & 3;
+  disease_profile[3] = (entry>>2) & 3;
+  disease_profile[4] = entry & 3;
+}
+
+// searches through the entries[] matrix to see if it is there
+// returns the integer location of the patient, or -1 if not found
+int find_ID(unsigned int entries[], int num_patients, unsigned int requested_ID) {
+  for (int i = 0; i < num_patients; i++) {
+    if ((entries[i]>>17) == (requested_ID)) {
+      return i;
+    }
+  }
+  return -1;
+}
+
+// searches through the patient_ID_array[] matrix to see if the ID is in it
 bool is_duplicate(unsigned int patient_ID, unsigned int patient_ID_array[], int num_entered) {
   if (num_entered < 1) {
     return false;
@@ -121,7 +143,7 @@ int main(int argc, const char* argv[]) {
 
   // read the data into the array
   int num_patients = load(entries, num_entries, fp);
-  printf("num patients is %i\n", num_patients);
+
   // close file pointer
   fclose(fp);
 
@@ -130,16 +152,36 @@ int main(int argc, const char* argv[]) {
   while (user_input != 'q') {
     print_menu();
     scanf("%s", user_menu_input);
-    printf("user inputted %s\n", user_menu_input);
     user_input = user_menu_input[0];
     if (user_input == 'q') {
       exit(0);
     } else if (strlen(user_menu_input) != 1 || (user_input != 'n' && user_input != 'd' && user_input != 'e' && user_input != 'c' && user_input != 'l' && user_input != 's' && user_input != 'q')) {
       bad_menu_option(user_input);
     } else {
+
+      unsigned int requested_ID = 0;
+
+
       switch (user_input) {
         case 'n':
           output_n(num_patients);
+          printf("\n");
+          break;
+        case 'd':
+          prompt_d();
+          scanf("%u", &requested_ID);
+          // find location of that patient ID
+          int requested_loc = find_ID(entries, num_patients, requested_ID);
+          if (requested_loc == -1) { // Patient ID not found in database
+            bad_patient_ID(requested_ID);
+            printf("\n");
+          } else {
+            int disease_profile[5];
+            fill_disease_profile(entries, requested_loc, disease_profile);
+            output_disease_profile(disease_profile);
+            printf("\n");
+          }
+          break;
       }
 
     }
