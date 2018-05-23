@@ -4,12 +4,12 @@
 #include <string.h>
 #include <stdbool.h>
 
-//searches through the entries[] matrix to see if the
+// searches through the entries[] matrix to see if the
 bool is_duplicate(unsigned int patient_ID, unsigned int patient_ID_array[], int num_entered) {
   if (num_entered < 1) {
     return false;
   }
-  //search through the patient ID's that have been entered to see if this is a duplicate
+  // search through the patient ID's that have been entered to see if this is a duplicate
   for (int j = 0; j < num_entered; j++) {
     if (patient_ID == patient_ID_array[j]) {
       return true;
@@ -18,7 +18,7 @@ bool is_duplicate(unsigned int patient_ID, unsigned int patient_ID_array[], int 
   return false;
 }
 
-//convert the disease status to its unsigned integer representation
+// convert the disease status to its unsigned integer representation
 unsigned int status_to_int(char status[]) {
   if (strcmp(status, "UN") == 0) {
     return 0;
@@ -35,7 +35,7 @@ unsigned int status_to_int(char status[]) {
 }
 
 
-//load the database into the entries[] array
+// load the database into the entries[] array
 void load(unsigned int entries[], int num_entries, FILE *fp) {
   char entry_line[200];
   unsigned int patient_ID;
@@ -47,29 +47,30 @@ void load(unsigned int entries[], int num_entries, FILE *fp) {
   char CFstatus[20];
   unsigned int patient_ID_array[num_entries];
 
-  //get the first line which has the number of entries already, so that the buffer is on the next line
+  // get the first line which has the number of entries already, so that the buffer is on the next line
   if (fgets(entry_line, "%s", fp) != NULL) {
     //hooray
   } else {
     printf("Error: failed to pass the first line when reading from the database\n");
     exit(0);
   }
-  int i = 0;
-  //scan line by line until no more entries to scan
+  int i = 0; // i is the index of the database file
+  int e = 0; // e is the index of the entries array we are in
+  // scan line by line until no more entries to scan
   while ((fgets(entry_line, 200, fp) != NULL) && (i < num_entries)) {
     printf("%s\n", entry_line);
-    //pull out each piece of data from the line
+    // pull out each piece of data from the line
     sscanf(entry_line, "%u %u %s %s %s %s %s", &patient_ID,
       &patient_age, HUstatus, FHstatus, SCstatus, TSstatus, CFstatus);
-    //add the patient ID to the patient ID array
+    // add the patient ID to the patient ID array
     patient_ID_array[i] = patient_ID;
     printf("ID = %u, age = %u, HU status = %s\n", patient_ID_array[i], patient_age, HUstatus);
 
-    //check if the patient_ID is a duplicate
+    // check if the patient_ID is a duplicate
     if (is_duplicate(patient_ID, patient_ID_array, i)) {
       duplicate_entry(patient_ID);
     } else {
-      //convert strings of disease statuses to integers
+      // convert strings of disease statuses to integers
       unsigned int HUstatus_int = status_to_int(HUstatus);
       unsigned int FHstatus_int = status_to_int(FHstatus);
       unsigned int SCstatus_int = status_to_int(SCstatus);
@@ -77,7 +78,7 @@ void load(unsigned int entries[], int num_entries, FILE *fp) {
       unsigned int CFstatus_int = status_to_int(CFstatus);
       printf("got %u %u %u %u %u\n", HUstatus_int, FHstatus_int, SCstatus_int, TSstatus_int, CFstatus_int);
 
-      //bit shift the variables to the proper location
+      // bit shift the variables to the proper location
       patient_ID = patient_ID<<17;
       patient_age = patient_age<<10;
       HUstatus_int = HUstatus_int<<8;
@@ -127,12 +128,15 @@ int main(int argc, const char* argv[]) {
     printf("user inputted %s\n", user_menu_input);
     user_input = user_menu_input[0];
     if (user_input == 'q') {
-      // do nothing
+      exit(0);
     } else if (strlen(user_menu_input) != 1 || (user_input != 'n' && user_input != 'd' && user_input != 'e' && user_input != 'c' && user_input != 'l' && user_input != 's' && user_input != 'q')) {
       bad_menu_option(user_input);
     } else {
-      printf("execute program");
-      // execute program
+      switch (user_input) {
+        case 'n':
+          output_n(sizeof(entries)/sizeof(entries[0]));
+          printf("Entries[0] = %u, Entries[7] = %u\n", entries[0], entries[7]);
+      }
 
     }
 
