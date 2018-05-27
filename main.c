@@ -4,6 +4,17 @@
 #include <string.h>
 #include <stdbool.h>
 
+const char *disease_codes[] = {"HU", "FH", "SC", "TS", "CF"};
+
+int find_disease_code(char disease_code[]) {
+  for (int i = 0; i < 5; i++) {
+    if (strcmp(disease_codes[i], disease_code) == 0) {
+      return i;
+    }
+  }
+  return -1;
+}
+
 // Converts an integer to binary as an array of chars
 void to_binary(unsigned int decimal, FILE *fp) {
   for (int i = 31, j = 0; i >= 0; i--, j++) {
@@ -29,6 +40,21 @@ void fill_disease_profile(unsigned int entries[], int requested_loc, int disease
   disease_profile[2] = (entry>>4) & 3;
   disease_profile[3] = (entry>>2) & 3;
   disease_profile[4] = entry & 3;
+}
+
+//updates the database (entries matrix) with the new disease status for a certain disease for a patient
+void update_db(unsigned int entries[], int requested_loc, int disease_code_as_int, int new_status_as_int) {
+  unsigned int updated_entry = entries[requested_loc];
+  int bit_shifts = ((-2)*disease_code_as_int) + 8; // function to map the disease code to its bit location in entry
+  unsigned int deleter = 3 << bit_shifts;
+  printf("deleter: %u\n", deleter);
+  deleter = ~deleter; // deleter should have ones everywhere except 2 bits
+  printf("~deleter: %u\n", deleter);
+  updated_entry = updated_entry & deleter; // remove the two bits that had the old statuse
+  printf("%u\n", updated_entry);
+  updated_entry = updated_entry | (new_status_as_int << bit_shifts);
+  printf("used to be %u now is %u\n", entries[requested_loc], updated_entry);
+  entries[requested_loc] = updated_entry;
 }
 
 // finds the offspring of two patients and fills the disease_profile of the offspring
@@ -252,6 +278,30 @@ int main(int argc, const char* argv[]) {
           scanf("%s", output_filename);
           write_to_file(entries, num_patients, output_filename);
           break;
+        }
+        case 'e':
+        {
+          char disease_code[20];
+          char new_status[20];
+          prompt_e();
+          scanf("%u", &requested_ID);
+          scanf("%s", disease_code);
+          scanf("%s", new_status);
+          int ID_loc = find_ID(entries, num_patients, requested_ID);
+          int disease_code_as_int = find_disease_code(disease_code);
+          int new_status_as_int = status_to_int(new_status);
+          printf("found disease code at: %i\n", disease_code_as_int);
+          if (ID_loc < 0) {
+            bad_patient_ID(requested_ID);
+          } else if (strcmp(disease_code,"HU") != 0 && strcmp(disease_code,"FH") != 0 && strcmp(disease_code,"SC") != 0
+              && strcmp(disease_code,"TS") != 0 && strcmp(disease_code,"CF") != 0) {
+              bad_disease_code(disease_code);
+          } else if (new_status_as_int == 5) {
+            //already printed an error message from status_to_int() function
+          } else {
+            update_db(entries, ID_loc, disease_code_as_int, new_status_as_int);
+          }
+
         }
       }
 

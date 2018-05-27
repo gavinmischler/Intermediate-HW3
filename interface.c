@@ -10,7 +10,7 @@
 #include "interface.h"
 #define NUM_DISEASES 5
 
-static const char *disease_codes[] = {"HU", "FH", "SC", "TH", "CF"};
+static const char *disease_codes[] = {"HU", "FH", "SC", "TS", "CF"};
 
 void print_menu() {
   printf(
