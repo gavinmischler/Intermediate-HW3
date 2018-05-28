@@ -301,9 +301,46 @@ int main(int argc, const char* argv[]) {
           } else {
             update_db(entries, ID_loc, disease_code_as_int, new_status_as_int);
           }
+        }
+        case 'l':
+        {
+          char disease_code_1[10];
+          char disease_code_2[10];
+          char disease_code_3[10];
+          char disease_code_4[10];
+          char disease_code_5[10];
+          char input_line[100];
+          prompt_l();
+          // if (fgets(input_line, 100, stdin) == NULL) {
+          //   printf("Fgets() returned null\n");
+          // } else {
+          //   sscanf(input_line, "%s %s %s %s %s", disease_code_1,
+          //     disease_code_2, disease_code_3, disease_code_4, disease_code_5);
+          //     printf("1: %s, 2: %s, 3: %s, 4: %s, 5: %s\n", disease_code_1, disease_code_2, disease_code_3, disease_code_4, disease_code_5);
+          //     break;
+          // }
+
+          scanf("%s", disease_code_1);
+          scanf("%s", disease_code_2);
+          scanf("%s", disease_code_3);
+          scanf("%s", disease_code_4);
+          scanf("%s", disease_code_5);
+          if (find_disease_code(disease_code_1) == -1) {
+            bad_disease_code(disease_code_1);
+          } else if (find_disease_code(disease_code_2) == -1) {
+            bad_disease_code(disease_code_2);
+          } else if (find_disease_code(disease_code_3) == -1) {
+            bad_disease_code(disease_code_3);
+          } else if (find_disease_code(disease_code_4) == -1) {
+            bad_disease_code(disease_code_4);
+          } else if (find_disease_code(disease_code_5) == -1) {
+            bad_disease_code(disease_code_5);
+          } else {
+            
+          }
+
 
         }
-
       }
 
     }
