@@ -143,7 +143,7 @@ int load(unsigned int entries[], int num_entries, FILE *fp) {
   unsigned int patient_ID_array[num_entries];
 
   // get the first line which has the number of entries already, so that the buffer is on the next line
-  if (fgets(entry_line, "%s", fp) != NULL) {
+  if (fgets(entry_line, 200, fp) != NULL) {
     //hooray
   } else {
     printf("Error: failed to pass the first line when reading from the database\n");
@@ -304,27 +304,29 @@ int main(int argc, const char* argv[]) {
         }
         case 'l':
         {
-          char disease_code_1[10];
-          char disease_code_2[10];
-          char disease_code_3[10];
-          char disease_code_4[10];
-          char disease_code_5[10];
-          char input_line[100];
+          char disease_code_1[10] = {0};
+          char disease_code_2[10] = {0};
+          char disease_code_3[10] = {0};
+          char disease_code_4[10] = {0};
+          char disease_code_5[10] = {0};
+          char input_line[100]    = {0};
           prompt_l();
-          // if (fgets(input_line, 100, stdin) == NULL) {
-          //   printf("Fgets() returned null\n");
-          // } else {
-          //   sscanf(input_line, "%s %s %s %s %s", disease_code_1,
-          //     disease_code_2, disease_code_3, disease_code_4, disease_code_5);
-          //     printf("1: %s, 2: %s, 3: %s, 4: %s, 5: %s\n", disease_code_1, disease_code_2, disease_code_3, disease_code_4, disease_code_5);
-          //     break;
-          // }
+          //fflush(stdin);
+          while((getchar()) != '\n');
+          if (fgets(input_line, 100, stdin) == NULL) {
+            printf("Fgets() returned null\n");
+          } else {
+            sscanf(input_line, "%s %s %s %s %s", disease_code_1,
+              disease_code_2, disease_code_3, disease_code_4, disease_code_5);
+              printf("1: %s, 2: %s, 3: %s, 4: %s, 5: %s\n", disease_code_1, disease_code_2, disease_code_3, disease_code_4, disease_code_5);
+              break;
+          }
 
-          scanf("%s", disease_code_1);
-          scanf("%s", disease_code_2);
-          scanf("%s", disease_code_3);
-          scanf("%s", disease_code_4);
-          scanf("%s", disease_code_5);
+          // scanf("%s", disease_code_1);
+          // scanf("%s", disease_code_2);
+          // scanf("%s", disease_code_3);
+          // scanf("%s", disease_code_4);
+          // scanf("%s", disease_code_5);
           if (find_disease_code(disease_code_1) == -1) {
             bad_disease_code(disease_code_1);
           } else if (find_disease_code(disease_code_2) == -1) {
@@ -336,7 +338,7 @@ int main(int argc, const char* argv[]) {
           } else if (find_disease_code(disease_code_5) == -1) {
             bad_disease_code(disease_code_5);
           } else {
-            
+
           }
 
 

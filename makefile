@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-std=c99 -pedantic -Wall -Wextra
+CFLAGS=-std=c99 -g3 -pedantic -Wall -Wextra
 
 db: main.o interface.o
 	$(CC) -o db main.o interface.o
